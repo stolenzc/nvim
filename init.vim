@@ -13,6 +13,8 @@ set wildmenu
 set wrap
 " 设置自动缩进
 set autoindent
+" 根据上下文自动确定tab缩进长度
+"set smarttab
 " 设置缩进和回退字符数
 set shiftwidth=4
 " 设置tab的长度
@@ -72,7 +74,7 @@ nnoremap <C-l> <C-w>l
 " 设置tab的快捷键
 nnoremap <Tab>t :tabnew<cr>
 nnoremap <Tab>w :tabc<cr>
-nnoremap <Tab>h :tabp<cr>
+nnoremap <Tab>j :tabp<cr>
 nnoremap <Tab>l :tabn<cr>
 nnoremap <Tab>s :tabs<cr>
 
