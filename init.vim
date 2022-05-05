@@ -2,7 +2,7 @@
 " 设置行号显示
 set number
 " 设置相对行号
-set relativenumber
+" set relativenumber
 " 设置高亮
 syntax on
 " 设置显示命令
@@ -104,6 +104,8 @@ Plug 'mhinz/vim-startify'
 Plug 'preservim/nerdtree'
 " nerdtree兼容多标签
 Plug 'jistr/vim-nerdtree-tabs'
+" nerdtree显示git状态
+Plug 'xuyuanp/nerdtree-git-plugin'
 " 文件搜索
 Plug 'kien/ctrlp.vim'
 " 修改包裹的符号
@@ -111,8 +113,8 @@ Plug 'tpope/vim-surround'
 " 快捷输入成对符号
 Plug 'jiangmiao/auto-pairs'
 " 全局文本搜索
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
+" Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+" Plug 'junegunn/fzf.vim'
 " python IDE
 " Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
 " 高亮当前单词
@@ -129,11 +131,11 @@ Plug 'Yggdroot/indentLine'
 " 当前页面光标快速跳转
 Plug 'easymotion/vim-easymotion'
 " flake8代码检测
-Plug 'ncm2/ncm2'
-Plug 'roxma/nvim-yarp'
-Plug 'ncm2/ncm2-jedi'
+" Plug 'ncm2/ncm2'
+" Plug 'roxma/nvim-yarp'
+" Plug 'ncm2/ncm2-jedi'
 " Plug 'vim-syntastic/syntastic'
-Plug 'dense-analysis/ale'
+" Plug 'dense-analysis/ale'
 " 函数大纲
 Plug 'majutsushi/tagbar'
 call plug#end()
@@ -144,20 +146,8 @@ call plug#end()
 " --------------ctrlp--------------------
 let g:ctrlp_map='<c-p>'
 
-" --------------python-mode--------------
-" 开启python-mode
-" let g:pymode=1
-" let g:pymode_python='python3'
-" let g:pymode_trim_whitespaces=1
-" let g:pymode_rope_goto_definition_bind='<C-]>'
-" let g:pymode_lint=1
-" let g:pymode_lint_checkers=['pyflakes', 'pep8', 'mccabe', 'pylint']
-" let g:pymode_options_max_line_length=100
-" let g:pymode_virtualenv = 1
-" let g:pymode_virtualenv_path = $VIRTUAL_ENV
-" let g:pymode_rope_goto_definition_bind = 'gd'
-" <leader> b 打断点
-" <leader> r 运行python文件
+" ---------------vim-gitgutter------------
+set updatetime=100
 
 " ---------------NERDTREE-----------------
 " nnoremap <leader>v :NERDTreeFind<cr>
@@ -189,100 +179,28 @@ let g:indentLine_conceallevel = 0
 " let g:vim_json_syntax_conceal = 0 "" 为了防止导致json的引号自动隐藏
 let g:indentLine_noConcealCursor=""  " 为了防止导致json的引号自动隐藏
 
-" -----------------ncm2 设置-----------------
-set shortmess+=c
-autocmd BufEnter * call ncm2#enable_for_buffer()
-inoremap <expr> <CR> (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-set completeopt=menuone,noinsert
-
-" ------------------ale--------------------
-let g:ale_fixers = {
-\   '*': ['remove_trailing_lines', 'trim_whitespace'],
-\   'python': ['pylint'],
-\}
-let g:ale_completion_enabled = 0
-let g:ale_fix_on_save = 0
-let g:ale_sign_column_always = 1
-
 " ------------------tagbar-----------------
 nmap <F8> :TagbarToggle<CR>
 
-" ------------------syntastic--------------
-" set statusline+=%#warningmsg#
-" set statusline+=%{SyntasticStatuslineFlag()}
-" set statusline+=%*
-
-" let g:syntastic_always_populate_loc_list = 1
-" let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-let g:syntastic_python_checkers = ['pylint', 'flake8']
-
-" -----------------coc 设置------------------
-" " 设置插件
-" let g:coc_global_extensions = ['coc-json', 'coc-git', 'coc-python', 'coc-pyright', 'coc-highlight', 'coc-jedi', 'coc-pyls']
-" " 隐藏缓存，方便跳转
-" set hidden
-" " 设置延迟
-" set updatetime=100
-" " 设置命令模式的高度，显示更多内容
-" set cmdheight=1
-" " 让显示提示变少
-" set shortmess+=c
-" 
-" if has("nvim-0.5.0") || has("patch-8.1.1564")
-"   set signcolumn=number
-" else
-"   set signcolumn=yes
-" endif
-" " 使用tab选择提示内容
-" inoremap <silent><expr> <TAB>
-"       \ pumvisible() ? "\<C-n>" :
-"       \ <SID>check_back_space() ? "\<TAB>" :
-"       \ coc#refresh()
-" inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-" 
-" function! s:check_back_space() abort
-"   let col = col('.') - 1
-"   return !col || getline('.')[col - 1]  =~# '\s'
-" endfunction
-" 
-" " 使用快捷键打开或关闭提示
-" if has('nvim')
-"   inoremap <silent><expr> <c-space> coc#refresh()
-" else
-"   inoremap <silent><expr> <c-@> coc#refresh()
-" endif
-" 
-" " 使用回车确认选择的内容
-" inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
-"                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-" 
-" " 跳到上一个错误的位置
-" nmap <silent> [g <Plug>(coc-diagnostic-prev)
-" " 跳到下一个错误的位置
-" nmap <silent> ]g <Plug>(coc-diagnostic-next)
-" 
-" " 跳转到定义
-" nmap <silent> gd <Plug>(coc-definition)
-" nmap <silent> gy <Plug>(coc-type-definition)
-" nmap <silent> gi <Plug>(coc-implementation)
-" nmap <silent> gr <Plug>(coc-references)
-" 
-" " 显示文档
-" nnoremap <silent> K :call <SID>show_documentation()<CR>
-" function! s:show_documentation()
-"   if (index(['vim','help'], &filetype) >= 0)
-"     execute 'h '.expand('<cword>')
-"   elseif (coc#rpc#ready())
-"     call CocActionAsync('doHover')
-"   else
-"     execute '!' . &keywordprg . " " . expand('<cword>')
-"   endif
-" endfunction
-" 
+" -----------------nerdtree git plugin------
+" 默认git状态
+" let g:NERDTreeGitStatusIndicatorMapCustom = {
+                \ 'Modified'  :'✹',
+                \ 'Staged'    :'✚',
+                \ 'Untracked' :'✭',
+                \ 'Renamed'   :'➜',
+                \ 'Unmerged'  :'═',
+                \ 'Deleted'   :'✖',
+                \ 'Dirty'     :'✗',
+                \ 'Ignored'   :'☒',
+                \ 'Clean'     :'✔︎',
+                \ 'Unknown'   :'?',
+                \ }
+" 显示ignored的文件
+let g:NERDTreeGitStatusShowIgnored = 1
+" 去除git状态前的中括号
+" let g:NERDTreeGitStatusConcealBrackets = 1
+ 
 " " 高亮当前光标所在的单词
 " autocmd CursorHold * silent call CocActionAsync('highlight')
 

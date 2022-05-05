@@ -34,7 +34,19 @@ insert模式
 
 - `source ~/.config/nvim/init.vim` - 重新加载vim设置
 
-## nerdtree
+## 插件快捷键
+
+### nerdtree
 
 - `<leader> + g` - toggle 目录树
 - `<leader> + v` - 查找当前文件所在目录位置
+
+### control p
+
+- `ctrl p` - 唤起文件查找
+
+### easymotion
+
+- `ss 两个字母` - 唤起页面内查找
+
+
