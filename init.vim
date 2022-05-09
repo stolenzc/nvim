@@ -106,15 +106,14 @@ Plug 'preservim/nerdtree'
 Plug 'jistr/vim-nerdtree-tabs'
 " nerdtree显示git状态
 Plug 'xuyuanp/nerdtree-git-plugin'
-" 文件搜索
-Plug 'kien/ctrlp.vim'
 " 修改包裹的符号
 Plug 'tpope/vim-surround'
 " 快捷输入成对符号
 Plug 'jiangmiao/auto-pairs'
 " 全局文本搜索
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
+Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
+" apt/brew install ripgrep
+
 " python IDE
 " Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
 " 高亮当前单词
@@ -134,6 +133,9 @@ Plug 'easymotion/vim-easymotion'
 Plug 'ncm2/ncm2'
 Plug 'roxma/nvim-yarp'
 Plug 'ncm2/ncm2-jedi'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'mattn/vim-lsp-settings'
+Plug 'vim-python/python-syntax'
 " Plug 'vim-syntastic/syntastic'
 " Plug 'dense-analysis/ale'
 " 函数大纲
@@ -158,8 +160,51 @@ let ncm2#complete_length = [[1, 1]]
 "模糊匹配模式,详情请输入:help ncm2查看相关文档
 let g:ncm2#matcher = 'substrfuzzy'
 
-" --------------ctrlp--------------------
-let g:ctrlp_map='<c-p>'
+" -----------------vim_lsp---------------
+if executable('pyls')
+    " pip install python-language-server
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'pyls',
+        \ 'cmd': {server_info->['pyls']},
+        \ 'allowlist': ['python'],
+        \ })
+endif
+
+function! s:on_lsp_buffer_enabled() abort
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+    nmap <buffer> gd <plug>(lsp-definition)
+    nmap <buffer> gs <plug>(lsp-document-symbol-search)
+    nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
+    nmap <buffer> gr <plug>(lsp-references)
+    nmap <buffer> gi <plug>(lsp-implementation)
+    nmap <buffer> gt <plug>(lsp-type-definition)
+    nmap <buffer> <leader>rn <plug>(lsp-rename)
+    nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+    nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+    nmap <buffer> K <plug>(lsp-hover)
+    nnoremap <buffer> <expr><c-f> lsp#scroll(+4)
+    nnoremap <buffer> <expr><c-d> lsp#scroll(-4)
+
+    let g:lsp_format_sync_timeout = 1000
+    autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
+    
+    " refer to doc to add more commands
+endfunction
+
+augroup lsp_install
+    au!
+    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
+    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
+
+" ----------------leaderf----------------
+let g:Lf_WindowPosition = 'popup'
+let g:Lf_PreviewInPopup = 1
+let g:Lf_ShortcutF = "<leader>ff"
+nnoremap <leader>fa :Leaderf rg<cr>
+nnoremap <leader>fl :Leaderf line<cr>
 
 " ---------------vim-gitgutter------------
 set updatetime=100
