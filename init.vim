@@ -47,9 +47,25 @@ set scrolloff=3
 set cursorline
 highlight CursorLine cterm=NONE ctermbg=black ctermfg=green guibg=NONE guifg=NONE 
 
+" 代码折叠
+set foldmethod=indent
+set foldlevel=99
 " 设置主题
 set background=dark
 colorscheme hybrid
+
+" 设置python文件格式
+au BufNewFile,BufRead *.py
+    \ set tabstop=4
+    \ set softtabstop=4
+    \ set shiftwidth=4
+    \ set textwidth=100
+    \ set expandtab
+    \ set autoindent
+    \ set fileformat=unix
+
+" 标记空格颜色
+au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
 
 " 设置显示空白符
 " set listchars=eol:¬,tab:>·,trail:~,extends:>,precedes:<,space:␣
@@ -94,6 +110,9 @@ map <leader>l :vertical resize +5<CR>
 let mapleader=','
 let g:mapleader=','
 
+" 代码折叠键
+nnoremap <space> za
+
 " ------------插件------------
 call plug#begin('~/.config/nvim/plugged')
 " 主题插件
@@ -114,6 +133,10 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 " apt/brew install ripgrep
 
+" lsp 插件
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" 代码折叠
+Plug 'tmhedberg/simpylfold'
 " python IDE
 " Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
 " 高亮当前单词
@@ -129,75 +152,121 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'Yggdroot/indentLine'
 " 当前页面光标快速跳转
 Plug 'easymotion/vim-easymotion'
+" 代码高亮
+" Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 " flake8代码检测
-Plug 'ncm2/ncm2'
-Plug 'roxma/nvim-yarp'
-Plug 'ncm2/ncm2-jedi'
-Plug 'prabirshrestha/vim-lsp'
-Plug 'mattn/vim-lsp-settings'
-Plug 'vim-python/python-syntax'
+" Plug 'ncm2/ncm2'
+" Plug 'roxma/nvim-yarp'
+" Plug 'ncm2/ncm2-jedi'
+" Plug 'prabirshrestha/vim-lsp'
+" Plug 'mattn/vim-lsp-settings'
 " Plug 'vim-syntastic/syntastic'
 " Plug 'dense-analysis/ale'
 " 函数大纲
-Plug 'majutsushi/tagbar'
+" Plug 'majutsushi/tagbar'
 call plug#end()
 
 " --------------------------------------------------------------
 " ----------------------------插件配置--------------------------
 
-" --------------ncm2---------------------
-autocmd BufEnter * call ncm2#enable_for_buffer()
-set completeopt=noinsert,menuone,noselect
+" ---------------coc.nvim---------------
+set nobackup
+set nowritebackup
+set cmdheight=2
 set shortmess+=c
-inoremap <c-c> <ESC>
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-" 延迟弹窗,这样提示更加流畅
-let ncm2#popup_delay = 5
-"输入几个字母开始提醒:[[最小优先级,最小长度]]
-"如果是输入的是[[1,3],[7,2]],那么优先级在1-6之间,会在输入3个字符弹出,如果大于等于7,则2个字符弹出----优先级概念请参考文档中 ncm2-priority
-let ncm2#complete_length = [[1, 1]]
-"模糊匹配模式,详情请输入:help ncm2查看相关文档
-let g:ncm2#matcher = 'substrfuzzy'
-
-" -----------------vim_lsp---------------
-if executable('pyls')
-    " pip install python-language-server
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'pyls',
-        \ 'cmd': {server_info->['pyls']},
-        \ 'allowlist': ['python'],
-        \ })
+if has("nvim-0.5.0") || has("patch-8.1.1564")
+  " Recently vim can merge signcolumn and number column into one
+  set signcolumn=number
+else
+  set signcolumn=yes
 endif
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ CheckBackspace() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-function! s:on_lsp_buffer_enabled() abort
-    setlocal omnifunc=lsp#complete
-    setlocal signcolumn=yes
-    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
-    nmap <buffer> gd <plug>(lsp-definition)
-    nmap <buffer> gs <plug>(lsp-document-symbol-search)
-    nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
-    nmap <buffer> gr <plug>(lsp-references)
-    nmap <buffer> gi <plug>(lsp-implementation)
-    nmap <buffer> gt <plug>(lsp-type-definition)
-    nmap <buffer> <leader>rn <plug>(lsp-rename)
-    nmap <buffer> [g <plug>(lsp-previous-diagnostic)
-    nmap <buffer> ]g <plug>(lsp-next-diagnostic)
-    nmap <buffer> K <plug>(lsp-hover)
-    nnoremap <buffer> <expr><c-f> lsp#scroll(+4)
-    nnoremap <buffer> <expr><c-d> lsp#scroll(-4)
-
-    let g:lsp_format_sync_timeout = 1000
-    autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
-    
-    " refer to doc to add more commands
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
-augroup lsp_install
-    au!
-    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
-    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
-augroup END
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" GoTo code navigation.
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+nnoremap <silent> <leader>d :call ShowDocumentation()<CR>
+function! ShowDocumentation()
+  if CocAction('hasProvider', 'hover')
+    call CocActionAsync('doHover')
+  " else
+  "  call feedkeys('K', 'in')
+  endif
+endfunction
+
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" --------------ncm2---------------------
+" autocmd BufEnter * call ncm2#enable_for_buffer()
+" set completeopt=noinsert,menuone,noselect
+" set shortmess+=c
+" inoremap <c-c> <ESC>
+" inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+" inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+" " 延迟弹窗,这样提示更加流畅
+" let ncm2#popup_delay = 5
+" "输入几个字母开始提醒:[[最小优先级,最小长度]]
+" "如果是输入的是[[1,3],[7,2]],那么优先级在1-6之间,会在输入3个字符弹出,如果大于等于7,则2个字符弹出----优先级概念请参考文档中 ncm2-priority
+" let ncm2#complete_length = [[1, 1]]
+" "模糊匹配模式,详情请输入:help ncm2查看相关文档
+" let g:ncm2#matcher = 'substrfuzzy'
+" 
+" " -----------------vim_lsp---------------
+" if executable('pyls')
+"     " pip install python-language-server
+"     au User lsp_setup call lsp#register_server({
+"         \ 'name': 'pyls',
+"         \ 'cmd': {server_info->['pyls']},
+"         \ 'allowlist': ['python'],
+"         \ })
+" endif
+" 
+" function! s:on_lsp_buffer_enabled() abort
+"     setlocal omnifunc=lsp#complete
+"     setlocal signcolumn=yes
+"     if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+"     nmap <buffer> gd <plug>(lsp-definition)
+"     nmap <buffer> gs <plug>(lsp-document-symbol-search)
+"     nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
+"     nmap <buffer> gr <plug>(lsp-references)
+"     nmap <buffer> gi <plug>(lsp-implementation)
+"     nmap <buffer> gt <plug>(lsp-type-definition)
+"     nmap <buffer> <leader>rn <plug>(lsp-rename)
+"     nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+"     nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+"     nmap <buffer> K <plug>(lsp-hover)
+"     nnoremap <buffer> <expr><c-f> lsp#scroll(+4)
+"     nnoremap <buffer> <expr><c-d> lsp#scroll(-4)
+" 
+"     let g:lsp_format_sync_timeout = 1000
+"     autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
+"     
+"     " refer to doc to add more commands
+" endfunction
+" 
+" augroup lsp_install
+"     au!
+"     " call s:on_lsp_buffer_enabled only for languages that has the server registered.
+"     autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+" augroup END
 
 " ----------------leaderf----------------
 let g:Lf_WindowPosition = 'popup'
@@ -205,6 +274,10 @@ let g:Lf_PreviewInPopup = 1
 let g:Lf_ShortcutF = "<leader>ff"
 nnoremap <leader>fa :Leaderf rg<cr>
 nnoremap <leader>fl :Leaderf line<cr>
+
+" ---------------SimpylFold--------------
+"  代码折叠显示文档
+let g:SimpylFold_docstring_preview = 1
 
 " ---------------vim-gitgutter------------
 set updatetime=100
