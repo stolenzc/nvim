@@ -35,6 +35,8 @@ exec "nohlsearch"
 set smartcase
 " 设置默认分屏在右边
 set splitright
+" 设置默认分屏在下边
+set splitbelow
 " 设置字符集
 set encoding=utf-8
 " 设置100个字符提示
@@ -70,8 +72,8 @@ au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
 " 设置显示空白符
 " set listchars=eol:¬,tab:>·,trail:~,extends:>,precedes:<,space:␣
 " set listchars=tab:→,space:·
-set listchars=tab:>-,space:·
-set list
+" set listchars=tab:>-,space:·
+" set list
 " set nolist
 
 " ------------快捷键------------
@@ -134,7 +136,7 @@ Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 " apt/brew install ripgrep
 
 " lsp 插件
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " 代码折叠
 Plug 'tmhedberg/simpylfold'
 " python IDE
@@ -164,55 +166,56 @@ Plug 'easymotion/vim-easymotion'
 " Plug 'dense-analysis/ale'
 " 函数大纲
 " Plug 'majutsushi/tagbar'
+"
 call plug#end()
 
 " --------------------------------------------------------------
 " ----------------------------插件配置--------------------------
 
 " ---------------coc.nvim---------------
-set nobackup
-set nowritebackup
-set cmdheight=2
-set shortmess+=c
-if has("nvim-0.5.0") || has("patch-8.1.1564")
-  " Recently vim can merge signcolumn and number column into one
-  set signcolumn=number
-else
-  set signcolumn=yes
-endif
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ CheckBackspace() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-function! CheckBackspace() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
-                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
-
-" GoTo code navigation.
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-
-nnoremap <silent> <leader>d :call ShowDocumentation()<CR>
-function! ShowDocumentation()
-  if CocAction('hasProvider', 'hover')
-    call CocActionAsync('doHover')
-  " else
-  "  call feedkeys('K', 'in')
-  endif
-endfunction
-
-autocmd CursorHold * silent call CocActionAsync('highlight')
+" set nobackup
+" set nowritebackup
+" set cmdheight=2
+" set shortmess+=c
+" if has("nvim-0.5.0") || has("patch-8.1.1564")
+"   " Recently vim can merge signcolumn and number column into one
+"   set signcolumn=number
+" else
+"   set signcolumn=yes
+" endif
+" inoremap <silent><expr> <TAB>
+"       \ pumvisible() ? "\<C-n>" :
+"       \ CheckBackspace() ? "\<TAB>" :
+"       \ coc#refresh()
+" inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+" 
+" function! CheckBackspace() abort
+"   let col = col('.') - 1
+"   return !col || getline('.')[col - 1]  =~# '\s'
+" endfunction
+" 
+" inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+"                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+" 
+" nmap <silent> [g <Plug>(coc-diagnostic-prev)
+" nmap <silent> ]g <Plug>(coc-diagnostic-next)
+" 
+" " GoTo code navigation.
+" nmap <silent> gd <Plug>(coc-definition)
+" nmap <silent> gy <Plug>(coc-type-definition)
+" nmap <silent> gi <Plug>(coc-implementation)
+" nmap <silent> gr <Plug>(coc-references)
+" 
+" nnoremap <silent> <leader>d :call ShowDocumentation()<CR>
+" function! ShowDocumentation()
+"   if CocAction('hasProvider', 'hover')
+"     call CocActionAsync('doHover')
+"   " else
+"   "  call feedkeys('K', 'in')
+"   endif
+" endfunction
+" 
+" autocmd CursorHold * silent call CocActionAsync('highlight')
 
 " --------------ncm2---------------------
 " autocmd BufEnter * call ncm2#enable_for_buffer()
