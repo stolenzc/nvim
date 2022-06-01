@@ -49,4 +49,8 @@ insert模式
 
 - `ss 两个字母` - 唤起页面内查找
 
+### leaderf
+
+- `:LeaderfInstallCExtention` 安装c插件
+- `:Leaderf help 查找配置帮助`
 

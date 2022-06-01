@@ -275,6 +275,13 @@ call plug#end()
 let g:Lf_WindowPosition = 'popup'
 let g:Lf_PreviewInPopup = 1
 let g:Lf_ShortcutF = "<leader>ff"
+" let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
+let g:Lf_PreviewResult = {'Function': 1, 'BufTag': 1, 'Line': 1, 'File': 1, 'Rg': 1}
+let g:Lf_RgHighlightInPreview = 1
+let g:Lf_PreviewCode = 1
+let g:Lf_PopupPosition = [0, 1]
+let g:Lf_PopupWidth = 0.4
+let g:Lf_PopupPreviewPosition = 'right'
 nnoremap <leader>fa :Leaderf rg<cr>
 nnoremap <leader>fl :Leaderf line<cr>
 
