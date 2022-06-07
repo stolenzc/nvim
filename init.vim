@@ -45,6 +45,10 @@ set colorcolumn=101
 set ignorecase
 " 设置光标距离上下端部行数
 set scrolloff=3
+" 自动保存
+set autowriteall
+" 自动加载
+set autoread
 " 当前行高亮设置
 set cursorline
 highlight CursorLine cterm=NONE ctermbg=black ctermfg=green guibg=NONE guifg=NONE 
@@ -134,7 +138,8 @@ Plug 'jiangmiao/auto-pairs'
 " 全局文本搜索
 Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 " apt/brew install ripgrep
-
+" 侧边栏大纲
+Plug 'preservim/tagbar'
 " lsp 插件
 " Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " 代码折叠
@@ -155,7 +160,7 @@ Plug 'Yggdroot/indentLine'
 " 当前页面光标快速跳转
 Plug 'easymotion/vim-easymotion'
 " 代码高亮
-" Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 " flake8代码检测
 " Plug 'ncm2/ncm2'
 " Plug 'roxma/nvim-yarp'
@@ -272,18 +277,26 @@ call plug#end()
 " augroup END
 
 " ----------------leaderf----------------
+" 设置使用浮动框显示搜索框
 let g:Lf_WindowPosition = 'popup'
+" 允许预览搜索结果
 let g:Lf_PreviewInPopup = 1
+" 设置快捷搜索按键
 let g:Lf_ShortcutF = "<leader>ff"
-" let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
+" 自动预览结果的查询类型
 let g:Lf_PreviewResult = {'Function': 1, 'BufTag': 1, 'Line': 1, 'File': 1, 'Rg': 1}
+" 预览时高亮匹配代码
 let g:Lf_RgHighlightInPreview = 1
 let g:Lf_PreviewCode = 1
+" 搜索框位置
 let g:Lf_PopupPosition = [0, 1]
+" 搜索框宽度
 let g:Lf_PopupWidth = 0.4
+" 预览框位置
 let g:Lf_PopupPreviewPosition = 'right'
 nnoremap <leader>fa :Leaderf rg<cr>
 nnoremap <leader>fl :Leaderf line<cr>
+nnoremap <leader>fh :Leaderf help<cr>
 
 " ---------------SimpylFold--------------
 "  代码折叠显示文档
@@ -323,7 +336,37 @@ let g:indentLine_conceallevel = 0
 let g:indentLine_noConcealCursor=""  " 为了防止导致json的引号自动隐藏
 
 " ------------------tagbar-----------------
-nmap <F8> :TagbarToggle<CR>
+nmap <leader>tt :TagbarToggle<CR>
+" 启动tagbar时自动聚焦
+let g:tagbar_autofocus = 1
+let g:tagbar_ctags_bin="~/Documents/ctags/ctags"
+let g:tagbar_sort=1
+let g:tagbar_type_markdown = {
+  \ 'ctagstype'	: 'markdown',
+  \ 'kinds'		: [
+    \ 'c:chapter:0:1',
+    \ 's:section:0:1',
+    \ 'S:subsection:0:1',
+    \ 't:subsubsection:0:1',
+    \ 'T:l4subsection:0:1',
+    \ 'u:l5subsection:0:1',
+  \ ],
+  \ 'sro'			: '""',
+  \ 'kind2scope'	: {
+    \ 'c' : 'chapter',
+    \ 's' : 'section',
+    \ 'S' : 'subsection',
+    \ 't' : 'subsubsection',
+    \ 'T' : 'l4subsection',
+  \ },
+  \ 'scope2kind'	: {
+    \ 'chapter' : 'c',
+    \ 'section' : 's',
+    \ 'subsection' : 'S',
+    \ 'subsubsection' : 't',
+    \ 'l4subsection' : 'T',
+  \ },
+\ }
 
 " -----------------nerdtree git plugin------
 " 默认git状态

@@ -8,9 +8,13 @@
 ## install
 
 ```
+Ubuntu:
 sudo add-apt-repository ppa:neovim-ppa/unstable
 sudo apt-get update
 sudo apt-get install neovim
+
+MacOS:
+brew install neovim
 ```
 
 ## quick shortcut
@@ -32,14 +36,16 @@ insert模式
 
 ## normal command
 
-- `source ~/.config/nvim/init.vim` - 重新加载vim设置
+- `:source ~/.config/nvim/init.vim` - 重新加载vim设置
+- `:e!` - 重新加载当前文件
 
-## 插件快捷键
+## 插件安装与使用
 
 ### nerdtree
 
 - `<leader> + g` - toggle 目录树
 - `<leader> + v` - 查找当前文件所在目录位置
+- `m` - 光标聚焦在nerdtree中使用m操作文件
 
 ### control p
 
@@ -51,6 +57,17 @@ insert模式
 
 ### leaderf
 
-- `:LeaderfInstallCExtention` 安装c插件
-- `:Leaderf help 查找配置帮助`
+- `:LeaderfInstallCExtention` - 安装c插件
+- `:Leaderf help` - 查找配置帮助
+- `https://github.com/BurntSushi/ripgrep` - 全局模糊搜索依赖
 
+### tagbar
+
+依赖于ctags
+`https://github.com/universal-ctags/ctags`
+
+### vim-surround
+
+- `cs` - 修改符号
+- `ds` - 删除符号
+- `ys` - 添加符号
